@@ -1,0 +1,6 @@
+---
+- include_tasks: config_vtp_password.yml
+  when: c_or_d == "Config"
+- include_tasks: no_vtp_password.yml
+  when: c_or_d == "Delete"
+- include_tasks: create_verify.yml

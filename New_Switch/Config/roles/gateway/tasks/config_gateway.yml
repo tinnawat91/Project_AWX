@@ -1,0 +1,6 @@
+---
+- name: Configure default-gateway
+  ios_config:
+    lines:
+      - ip default-gateway {{ ip }}
+

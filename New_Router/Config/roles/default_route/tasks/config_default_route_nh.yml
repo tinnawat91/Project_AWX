@@ -1,0 +1,6 @@
+---
+- name: Configure default route
+  ios_config:
+    lines:
+      -  ip route 0.0.0.0 0.0.0.0 {{ nh }}
+

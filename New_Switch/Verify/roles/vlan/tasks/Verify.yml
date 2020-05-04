@@ -1,0 +1,33 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show vlan brief | section 619 
+  register: vl 
+- name: Verify header 
+  ios_command: 
+    commands: 
+      - show vlan brief 
+  register: head 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your vlan configuration is correct 
+      - Your vlan configuration is 
+      - 619 
+      - And output from switch is 
+      - "{{ head.stdout_lines[0][0] }}" 
+      - "{{ head.stdout_lines[0][1] }}" 
+      - "{{ vl.stdout_lines[0][0] }}" 
+  when: vl.stdout_lines[0][0] != "" and vl.stdout_lines[0][0].split()[0] == "619" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your vlan configuration is incorrect 
+      - Your vlan configuration is 
+      - 619 
+      - But output from switch is 
+      - "{{ head.stdout_lines[0][0] }}" 
+      - "{{ head.stdout_lines[0][1] }}" 
+      - "{{ vl.stdout_lines[0][0] }}" 
+  when: vl.stdout_lines[0][0] == ""

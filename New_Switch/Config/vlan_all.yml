@@ -1,0 +1,11 @@
+---
+
+- hosts: "{{ host_ip }}"
+  gather_facts: no
+  
+  roles:
+    - {role: vlan, when: add_or_remove is defined }
+    - {role: interface_mode, when: mode is defined and interface != ""}
+
+   
+ 

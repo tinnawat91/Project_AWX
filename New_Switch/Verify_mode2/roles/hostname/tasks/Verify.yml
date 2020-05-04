@@ -1,0 +1,11 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show run | section hostname 
+  register: name 
+- name: Output
+  debug: 
+    msg: 
+      - Switch hostname is 
+      - "{{ name.stdout_lines[0][0].split()[1] }}"

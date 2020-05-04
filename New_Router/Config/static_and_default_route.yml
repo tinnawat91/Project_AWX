@@ -1,0 +1,11 @@
+---
+
+- hosts: "{{ host_ip }}"
+  gather_facts: no
+  
+  roles:
+    - {role: static, when: Mode == "static"}
+    - {role: default_route, when: Mode == "default"}
+
+   
+ 

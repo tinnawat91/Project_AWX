@@ -1,0 +1,6 @@
+- include_tasks: config_ospf.yml
+  when: mode == "Config"
+- include_tasks: delete_ospf.yml
+  when: mode == "Delete"
+- include_tasks: create_verify.yml
+

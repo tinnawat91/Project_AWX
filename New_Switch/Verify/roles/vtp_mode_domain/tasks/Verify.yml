@@ -1,0 +1,47 @@
+--- 
+- name: Verify vtp mode 
+  ios_command: 
+    commands: 
+      - show vtp status | section Operating 
+  register: mode 
+- name: Verify vtp domain 
+  ios_command: 
+    commands: 
+      - show vtp status | section Domain 
+  register: domain 
+- name: Correct(mode) 
+  debug: 
+    msg: 
+      - Your vtp mode configuration is correct 
+      - Your vtp mode configuration is 
+      - Server 
+      - And output from switch is 
+      - "{{ mode.stdout_lines[0][0].split()[4] }}" 
+  when: mode.stdout_lines[0][0].split()[4] == "Server" 
+- name: Correct(domain) 
+  debug: 
+    msg: 
+      - Your vtp domain configuration is correct 
+      - Your vtp domain configuration is 
+      - TarTinn 
+      - And output from switch is 
+      - "{{ domain.stdout_lines[0][0].split()[4] }}" 
+  when: domain.stdout_lines[0][0].split()[4] == "TarTinn" 
+- name: Incorrect(mode) 
+  debug: 
+    msg: 
+      - Your vtp mode configuration is incorrect 
+      - Your vtp mode configuration is 
+      - Server 
+      - But output from switch is 
+      - "{{ mode.stdout_lines[0][0].split()[4] }}" 
+  when: mode.stdout_lines[0][0].split()[4] != "Server" 
+- name: Incorrect(domain) 
+  debug: 
+    msg: 
+      - Your vtp mode configuration is incorrect 
+      - Your vtp mode configuration is 
+      - TarTinn 
+      - But output from switch is 
+      - "{{ domain.stdout_lines[0][0].split()[4] }}" 
+  when: domain.stdout_lines[0][0].split()[4] != "TarTinn"

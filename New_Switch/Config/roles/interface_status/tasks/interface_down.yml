@@ -1,0 +1,6 @@
+---
+- name: Make interface down
+  ios_interface:
+    name: "{{ interface_name }}"
+    enabled: False
+

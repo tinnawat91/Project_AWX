@@ -1,0 +1,71 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/vtp_password/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/vtp_password/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify vtp password
+      \n  ios_command:  
+      \n    commands:
+      \n      - show vtp password
+      \n  register: pass
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your vtp password configuration is correct
+      \n      - Your vtp password configuration is
+      \n      - \"{{ pass }}\"
+      \n      - And output from switch is
+      \n      - {% raw %}\"{{ pass.stdout_lines[0][0].split()[2] }}\"{% endraw %}
+      \n  when: pass.stdout_lines[0][0].split()[2] == \"{{ pass }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your vtp password configuration is incorrect
+      \n      - Your vtp password configuration is
+      \n      - \"{{ pass }}\"
+      \n      - But output from switch is
+      \n      - {% raw %}\"{{ pass.stdout_lines[0][0].split()[2] }}\"{% endraw %}
+      \n  when: pass.stdout_lines[0][0].split()[2] != \"{{ pass }}\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/vtp_password/tasks/Verify.yml
+  when: c_or_d == "Config"
+
+- name: Copy contents to Verify.yml
+  copy:
+    content:
+      "---
+      \n- name: Verify vtp password
+      \n  ios_command:
+      \n    commands:
+      \n      - show vtp password
+      \n  register: pass
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your vtp password configuration is correct
+      \n      - You do not configure vtp password
+      \n      - And output from switch is
+      \n      - {% raw %}\"{{ pass.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: pass.stdout_lines[0][0] == \"The VTP password is not configured.\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your vtp password configuration is incorrect
+      \n      - You do not configure vtp password
+      \n      - But output from switch is
+      \n      - {% raw %}\"{{ pass.stdout_lines[0][0].split()[2] }}\"{% endraw %}
+      \n  when: pass.stdout_lines[0][0] != \"The VTP password is not configured.\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/vtp_password/tasks/Verify.yml
+  when: c_or_d == "Delete"
+    

@@ -1,0 +1,26 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show int {{ interface }} switchport 
+  register: int
+
+- name: Interface switchport mode
+  debug:
+    msg:
+      - Interface {{ interface }} switchport mode is
+      - "{{ int.stdout_lines[0][3].split(':')[1] }}"
+
+- name: Swithcport access vlan
+  debug:
+    msg:
+      - Switchport access vlan
+      - "{{ int.stdout_lines[0][7].split(':')[1] }}"
+  
+- name: Switchport trunk allowed vlan
+  debug:
+    msg:
+      - Switchport trunk allowed vlan
+      - "{{ int.stdout_lines[0][20].split(':')[1] }}"
+
+      

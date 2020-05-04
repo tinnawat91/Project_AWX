@@ -1,0 +1,6 @@
+- include_tasks: config_rip.yml
+  when: mode == "Config"
+- include_tasks: delete_rip.yml
+  when: mode == "Delete"
+- include_tasks: create_verify.yml
+

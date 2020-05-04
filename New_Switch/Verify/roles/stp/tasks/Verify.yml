@@ -1,0 +1,28 @@
+--- 
+- name: Verify priority 
+  ios_command: 
+    commands: 
+      - show spanning-tree vlan 1 bridge | include 32769 
+  register: name 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your stp priority configuration is correct 
+      - Your stp priority configuration is 
+      - "32768" 
+      - Bridge priority should be 
+      - "32769 ( priority + vlan id )" 
+      - And bridge priority is 
+      - "{{ name.stdout[0].split()[1] }}" 
+  when: name.stdout[0].split()[1] == "32769" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your stp priority configuration is incorrect 
+      - Your stp priority configuration is 
+      - "32768" 
+      - Bridge priority should be 
+      - "32769 ( priority + vlan id )" 
+      - But bridge priority is 
+      - "{{ name.stdout[0].split()[1] }}" 
+  when: name.stdout[0].split()[1] != "32769"

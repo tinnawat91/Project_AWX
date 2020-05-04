@@ -1,0 +1,104 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/static/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/static/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip static route | include {{ ip }}
+      \n  register: static
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your static route configuration is correct
+      \n      - Your static route configuration is
+      \n      - {{ ip }} {{ mask }} {{ interface }}
+      \n      - And routing table is
+      \n      - {% raw %}\"{{ static.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: static.stdout_lines[0][0] != \"\" and static.stdout_lines[0][0].split()[1].split('/')[0] == \"{{ ip }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your static route configuration is incorrect
+      \n      - Your static route configuration is
+      \n      - {{ ip }} {{ mask }} {{ interface }}
+      \n      - But routing table is
+      \n      - {% raw %}\"{{ static.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: static.stdout_lines[0][0] == \"\" or static.stdout_lines[0][0].split()[1].split('/')[0] != \"{{ ip }}\""
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/static/tasks/Verify.yml
+  when: mode == "Outgoing"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip static route | include {{ ip }}
+      \n  register: static
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your static route configuration is correct
+      \n      - Your static route configuration is
+      \n      - {{ ip }} {{ mask }} {{ nh }}
+      \n      - And routing table is
+      \n      - {% raw %}\"{{ static.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: static.stdout_lines[0][0] != \"\" and static.stdout_lines[0][0].split()[1].split('/')[0] == \"{{ ip }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your static route configuration is incorrect
+      \n      - Your static route configuration is
+      \n      - {{ ip }} {{ mask }} {{ nh }}
+      \n      - But routing table is
+      \n      - {% raw %}\"{{ static.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: static.stdout_lines[0][0] == \"\" or static.stdout_lines[0][0].split()[1].split('/')[0] != \"{{ ip }}\""
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/static/tasks/Verify.yml
+  when: mode == "Next-hop"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip static route | include {{ ip }}
+      \n  register: static
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your static route configuration is correct
+      \n      - You do not cofigure static route
+      \n      - And routing table is
+      \n      - {% raw %}\"{{ static.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: static.stdout_lines[0][0] == \"\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your static route configuration is incorrect
+      \n      - You do not configure static route
+      \n      - But routing table is
+      \n      - {% raw %}\"{{ static.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: static.stdout_lines[0][0] != \"\""
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/static/tasks/Verify.yml
+  when: mode == "Delete"
+
+
+
+     

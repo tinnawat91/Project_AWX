@@ -1,0 +1,7 @@
+- include_tasks: config_default_route_outgoing.yml
+  when: mode == "Outgoing"
+- include_tasks: config_default_route_nh.yml
+  when: mode == "Next-hop"
+- include_tasks: delete_default_route.yml
+  when: mode == "Delete"
+- include_tasks: create_verify.yml

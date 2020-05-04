@@ -1,0 +1,11 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show run | section rip 
+  register: rip 
+- name: Output
+  debug: 
+    msg: 
+      - Network activated by rip are 
+      - "{{ rip.stdout[0] | regex_findall('\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b') }}"

@@ -1,0 +1,12 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip protocol | section ospf 
+  register: ospf 
+- name: Output
+  debug: 
+    msg: 
+      - Network activated by ospf are 
+      - "{{ ospf.stdout[0] | regex_findall('\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b +\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b +area +\\d{1,10}') }}"
+

@@ -1,0 +1,6 @@
+---
+- name: Remove default-gateway
+  ios_config:
+    lines:
+      - no ip default-gateway "{{ ip }}"
+

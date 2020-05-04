@@ -1,0 +1,6 @@
+---
+- name: Configure stp priority
+  ios_config:
+    lines:
+      - spanning-tree vlan {{ vlan }} priority {{ priority }}
+

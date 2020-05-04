@@ -1,0 +1,11 @@
+---
+
+- hosts: "{{ host_ip }}"
+  gather_facts: no
+  
+  roles:
+    - {role: rip, when: mode == "rip"}
+    - {role: ospf, when: mode == "ospf"}
+
+   
+ 

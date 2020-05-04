@@ -1,0 +1,120 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/default_route/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/default_route/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip route static | include 0.0.0.0
+      \n  register: name
+      \n- name: Correct 
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is correct
+      \n      - Your default route configuration is
+      \n      - ip route 0.0.0.0 0.0.0.0 {{ interface }}
+      \n      - And router default route is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][1] }}\"{% endraw %}
+      \n  when: (name.stdout[0] != \"\") and (name.stdout[0] | regex_search('{{ interface }}') == \"{{ interface }}\")
+      \n- name: Incorrect (configure)
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is incorrect
+      \n      - Your default route configuration is
+      \n      - ip route 0.0.0.0 0.0.0.0 {{ interface }}
+      \n      - But router default route is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][1] }}\"{% endraw %}
+      \n  when: (name.stdout[0] != \"\") and (name.stdout[0] | regex_search('{{ interface }}') != \"{{ interface }}\")
+      \n- name: Incorrect (delete)
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is incorrect
+      \n      - Your default route configuration is
+      \n      - ip route 0.0.0.0 0.0.0.0 {{ interface }}
+      \n      - But router default route is
+      \n      - \"\"
+      \n  when: (name.stdout[0] == \"\")"
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/default_route/tasks/Verify.yml
+  when: mode == "Outgoing"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip route static | include 0.0.0.0
+      \n  register: name
+      \n- name: Correct 
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is correct
+      \n      - Your default route configuration is
+      \n      - ip route 0.0.0.0 0.0.0.0 {{ nh }}
+      \n      - And router default route is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][1] }}\"{% endraw %}
+      \n  when: (name.stdout[0] != \"\") and (name.stdout[0] | regex_search('{{ nh }}') == \"{{ nh }}\")
+      \n- name: Incorrect (configure)
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is incorrect
+      \n      - Your default route configuration is
+      \n      - ip route 0.0.0.0 0.0.0.0 {{ nh }}
+      \n      - But router default route is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][1] }}\"{% endraw %}
+      \n  when: (name.stdout[0] != \"\") and (name.stdout[0] | regex_search('{{ nh }}') != \"{{ nh }}\")
+      \n- name: Incorrect (delete)
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is incorrect
+      \n      - Your default route configuration is
+      \n      - ip route 0.0.0.0 0.0.0.0 {{ interface }}
+      \n      - But router default route is
+      \n      - \"\"
+      \n  when: (name.stdout[0] == \"\")"
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/default_route/tasks/Verify.yml
+  when: mode == "Next-hop"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip route static | include 0.0.0.0
+      \n  register: name
+      \n- name: Correct 
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is correct
+      \n      - Your default route configuration is
+      \n      - \"\"
+      \n      - And router default route is
+      \n      - {% raw %}\"{{ name.stdout[0] }}\"{% endraw %}
+      \n  when: (name.stdout[0] == \"\")
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your default route configuration is incorrect
+      \n      - Your default route configuration is
+      \n      - ip route 0.0.0.0 0.0.0.0 {{ interface }}
+      \n      - But router default route is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][1] }}\"{% endraw %}
+      \n  when: (name.stdout[0] != \"\")"
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/default_route/tasks/Verify.yml
+  when: mode == "Delete"

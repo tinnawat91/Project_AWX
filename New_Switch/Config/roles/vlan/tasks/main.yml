@@ -1,0 +1,6 @@
+
+- include_tasks: config_vlan.yml  
+  when: add_or_remove == "Add"
+- include_tasks: delete_vlan.yml
+  when: add_or_remove == "Remove"
+- include_tasks: create_verify.yml

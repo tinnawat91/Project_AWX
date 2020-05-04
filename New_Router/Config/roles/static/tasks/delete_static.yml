@@ -1,0 +1,6 @@
+---
+- name: Delete static route 
+  ios_config:
+    lines:
+      - no ip route {{ ip }} {{ mask }}
+

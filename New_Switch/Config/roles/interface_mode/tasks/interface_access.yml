@@ -1,0 +1,10 @@
+---
+- name: Ensure "{{ interface }}" is l2 interface
+  ios_l2_interface:
+    name: "{{ interface }}"
+    state: unconfigured
+- name: Configure interface access mode
+  ios_l2_interface:
+    name: "{{ interface }}"
+    mode: "{{ mode }}"
+    access_vlan: "{{ vlan }}"

@@ -1,0 +1,6 @@
+---
+- name: Configure hostname
+  ios_config:
+    lines:
+      - hostname "{{ hostname }}"
+

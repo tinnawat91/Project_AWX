@@ -1,0 +1,11 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show run | section default-gateway 
+  register: gw 
+- name: Output
+  debug: 
+    msg: 
+      - Default-gateway is 
+      - "{{ gw.stdout_lines[0][0] }}"

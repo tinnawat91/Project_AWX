@@ -1,0 +1,6 @@
+---
+- name: Configure static route (outgoing)
+  ios_config:
+    lines:
+      - ip route {{ ip }} {{ mask }} {{ interface }}
+

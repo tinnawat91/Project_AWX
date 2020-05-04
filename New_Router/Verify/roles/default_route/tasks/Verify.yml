@@ -1,0 +1,33 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip route static | include 0.0.0.0 
+  register: name 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your default route configuration is correct 
+      - Your default route configuration is 
+      - ip route 0.0.0.0 0.0.0.0 Serial0/1/0 
+      - And router default route is 
+      - "{{ name.stdout_lines[0][1] }}" 
+  when: (name.stdout[0] != "") and (name.stdout[0] | regex_search('Serial0/1/0') == "Serial0/1/0") 
+- name: Incorrect (configure) 
+  debug: 
+    msg: 
+      - Your default route configuration is incorrect 
+      - Your default route configuration is 
+      - ip route 0.0.0.0 0.0.0.0 Serial0/1/0 
+      - But router default route is 
+      - "{{ name.stdout_lines[0][1] }}" 
+  when: (name.stdout[0] != "") and (name.stdout[0] | regex_search('Serial0/1/0') != "Serial0/1/0") 
+- name: Incorrect (delete) 
+  debug: 
+    msg: 
+      - Your default route configuration is incorrect 
+      - Your default route configuration is 
+      - ip route 0.0.0.0 0.0.0.0 Serial0/1/0 
+      - But router default route is 
+      - "" 
+  when: (name.stdout[0] == "")

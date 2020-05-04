@@ -1,0 +1,24 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show run | section default 
+  register: gw 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your default-gateway configuration is correct 
+      - Your ip default-gateway configuration is 
+      - 192.168.100.1 
+      - And output from switch is 
+      - "{{ gw.stdout_lines[0][0] }}" 
+  when: gw.stdout_lines[0][0] != "" and gw.stdout_lines[0][0].split()[2] == "192.168.100.1" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your default-gateway configuration is incorrect 
+      - Your ip default-gateway configuration is 
+      - 192.168.100.1 
+      - But output from switch is 
+      - "{{ gw.stdout_lines[0][0] }}" 
+  when: gw.stdout_lines[0][0] == "" or gw.stdout_lines[0][0].split()[2] != "192.168.100.1"

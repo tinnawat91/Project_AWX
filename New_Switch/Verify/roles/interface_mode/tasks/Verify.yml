@@ -1,0 +1,42 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show interface GigabitEthernet1/0/1 switchport 
+  register: int 
+- name: Correct(mode) 
+  debug: 
+    msg: 
+      - Your interface switchport configuration is correct 
+      - Your interface switchport mode configuration is 
+      - "access" 
+      - And interface GigabitEthernet1/0/1 switchport mode  is 
+      - "{{ int.stdout_lines[0][3].split(':')[1] }}" 
+  when: int.stdout_lines[0][3].split(':')[1] == " static access" 
+- name: Correct(access vlan) 
+  debug: 
+    msg: 
+      - Your interface switchport configuration is correct 
+      - Your interface switchport access vlan configuration is 
+      - "access vlan 619" 
+      - And interface GigabitEthernet1/0/1 switchport access vlan is 
+      - "{{ int.stdout_lines[0][7].split(':')[1] }}" 
+  when: int.stdout_lines[0][3].split(':')[1] == " static access" and int.stdout_lines[0][7].split(':')[1].split()[0] == "619" 
+- name: incorrect(mode) 
+  debug: 
+    msg: 
+      - Your interface switchport configuration is incorrect 
+      - Your interface switchport mode configuration is 
+      - "access" 
+      - But interface GigabitEthernet1/0/1 switchport mode  is 
+      - "{{ int.stdout_lines[0][3].split(':')[1] }}" 
+  when: int.stdout_lines[0][3].split(':')[1] != " static access" 
+- name: incorrect(access vlan) 
+  debug: 
+    msg: 
+      - Your interface switchport configuration is incorrect 
+      - Your interface switchport access vlan configuration is 
+      - "access vlan 619" 
+      - But interface GigabitEthernet1/0/1 switchport access vlan is 
+      - "{{ int.stdout_lines[0][7].split(':')[1] }}" 
+  when: int.stdout_lines[0][3].split(':')[1] == " static access" and int.stdout_lines[0][7].split(':')[1].split()[0] != "619"

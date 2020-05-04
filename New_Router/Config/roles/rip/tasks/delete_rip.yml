@@ -1,0 +1,13 @@
+---
+- name: Delete rip protocol
+  ios_config:
+    lines:
+      - no router rip
+#- name: test
+#  debug:
+#    msg:
+#      - network {{ item }}
+#  with_items:
+#    - "{{ test.split('\n') }}"
+ 
+   

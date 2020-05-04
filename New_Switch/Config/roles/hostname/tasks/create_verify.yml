@@ -1,0 +1,41 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/hostname/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/hostname/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show run | section hostname
+      \n  register: name
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your hostname configuration is correct
+      \n      - Your hostname configuration is
+      \n      - {{ hostname }}
+      \n      - And switch hostname is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][0].split()[1] }}\"{% endraw %}
+      \n  when: name.stdout_lines[0][0].split()[1] == \"{{ hostname }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your hostname configuration is incorrect
+      \n      - Your hostname configuration is
+      \n      - {{ hostname }}
+      \n      - But switch hostname is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][0].split()[1] }}\"{% endraw %}
+      \n  when: name.stdout_lines[0][0].split()[1] != \"{{ hostname }}\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/hostname/tasks/Verify.yml

@@ -1,0 +1,10 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show spanning-tree vlan {{ vlan }} | begin Interface 
+  register: name 
+- name: Output
+  debug: 
+    msg: 
+      - "{{ name.stdout_lines[0] }}"

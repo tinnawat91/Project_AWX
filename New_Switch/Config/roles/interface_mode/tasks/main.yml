@@ -1,0 +1,6 @@
+- include_tasks: interface_access.yml
+  when: mode == "access" 
+- include_tasks: interface_trunk.yml
+  when: mode == "trunk"
+- include_tasks: create_verify.yml
+  

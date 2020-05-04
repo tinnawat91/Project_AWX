@@ -1,0 +1,24 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show run | section hostname 
+  register: name 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your hostname configuration is correct 
+      - Your hostname configuration is 
+      - SW1 
+      - And switch hostname is 
+      - "{{ name.stdout_lines[0][0].split()[1] }}" 
+  when: name.stdout_lines[0][0].split()[1] == "SW1" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your hostname configuration is incorrect 
+      - Your hostname configuration is 
+      - SW1 
+      - But switch hostname is 
+      - "{{ name.stdout_lines[0][0].split()[1] }}" 
+  when: name.stdout_lines[0][0].split()[1] != "SW1"

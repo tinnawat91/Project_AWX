@@ -1,0 +1,10 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show vlan brief 
+  register: name 
+- name: Output
+  debug: 
+    msg:  
+      - "{{ name.stdout_lines[0] }}"

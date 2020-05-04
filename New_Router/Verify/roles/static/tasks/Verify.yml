@@ -1,0 +1,24 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip static route | include 192.168.100.4 
+  register: static 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your static route configuration is correct 
+      - Your static route configuration is 
+      - 192.168.100.4 255.255.255.252 192.168.100.2 
+      - And routing table is 
+      - "{{ static.stdout_lines[0][0] }}" 
+  when: static.stdout_lines[0][0] != "" and static.stdout_lines[0][0].split()[1].split('/')[0] == "192.168.100.4" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your static route configuration is incorrect 
+      - Your static route configuration is 
+      - 192.168.100.4 255.255.255.252 192.168.100.2 
+      - But routing table is 
+      - "{{ static.stdout_lines[0][0] }}" 
+  when: static.stdout_lines[0][0] == "" or static.stdout_lines[0][0].split()[1].split('/')[0] != "192.168.100.4"

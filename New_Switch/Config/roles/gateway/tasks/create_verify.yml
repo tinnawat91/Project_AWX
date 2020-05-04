@@ -1,0 +1,41 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/gateway/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/gateway/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show run | section default
+      \n  register: gw
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your default-gateway configuration is correct
+      \n      - Your ip default-gateway configuration is
+      \n      - {{ ip }}
+      \n      - And output from switch is
+      \n      - {% raw %}\"{{ gw.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: gw.stdout_lines[0][0] != \"\" and gw.stdout_lines[0][0].split()[2] == \"{{ ip }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your default-gateway configuration is incorrect
+      \n      - Your ip default-gateway configuration is
+      \n      - {{ ip }}
+      \n      - But output from switch is
+      \n      - {% raw %}\"{{ gw.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: gw.stdout_lines[0][0] == \"\" or gw.stdout_lines[0][0].split()[2] != \"{{ ip }}\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/gateway/tasks/Verify.yml

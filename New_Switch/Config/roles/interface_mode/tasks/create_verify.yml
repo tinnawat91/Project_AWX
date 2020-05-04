@@ -1,0 +1,108 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/interface_mode/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/interface_mode/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show interface {{ interface }} switchport
+      \n  register: int
+      \n- name: Correct(mode)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is correct
+      \n      - Your interface switchport mode configuration is
+      \n      - \"{{ mode }}\"
+      \n      - And interface {{ interface }} switchport mode  is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][3].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] == \" static access\"
+      \n- name: Correct(access vlan)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is correct
+      \n      - Your interface switchport access vlan configuration is
+      \n      - \"{{ mode }} vlan {{ vlan }}\"
+      \n      - And interface {{ interface }} switchport access vlan is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][7].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] == \" static access\" and int.stdout_lines[0][7].split(':')[1].split()[0] == \"{{ vlan }}\"
+      \n- name: incorrect(mode)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is incorrect
+      \n      - Your interface switchport mode configuration is
+      \n      - \"{{ mode }}\"
+      \n      - But interface {{ interface }} switchport mode  is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][3].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] != \" static access\"
+      \n- name: incorrect(access vlan)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is incorrect
+      \n      - Your interface switchport access vlan configuration is
+      \n      - \"{{ mode }} vlan {{ vlan }}\"
+      \n      - But interface {{ interface }} switchport access vlan is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][7].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] == \" static access\" and int.stdout_lines[0][7].split(':')[1].split()[0] != \"{{ vlan }}\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/interface_mode/tasks/Verify.yml
+  when: mode == "access"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show interface {{ interface }} switchport
+      \n  register: int
+      \n- name: Correct(mode)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is correct
+      \n      - Your interface switchport mode configuration is
+      \n      - \"{{ mode }}\"
+      \n      - And interface {{ interface }} switchport mode  is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][3].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] == \" trunk\"
+      \n- name: Correct(allowed vlan)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is correct
+      \n      - Your interface switchport allowed vlan configuration is
+      \n      - \"{{ mode }} allowed vlan {{ vlan }}\"
+      \n      - And interface {{ interface }} switchport allowed vlan is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][20].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] == \" trunk\" and int.stdout_lines[0][20].split(':')[1].split()[0] == \"{{ vlan }}\"
+      \n- name: incorrect(mode)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is incorrect
+      \n      - Your interface switchport mode configuration is
+      \n      - \"{{ mode }}\"
+      \n      - But interface {{ interface }} switchport mode  is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][3].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] != \" trunk\"
+      \n- name: incorrect(allowed vlan)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface switchport configuration is incorrect
+      \n      - Your interface switchport allowed vlan configuration is
+      \n      - \"{{ mode }} allowed vlan {{ vlan }}\"
+      \n      - But interface {{ interface }} switchport allowed vlan is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][20].split(':')[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][3].split(':')[1] == \" trunk\" and int.stdout_lines[0][20].split(':')[1].split()[0] != \"{{ vlan }}\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/interface_mode/tasks/Verify.yml
+  when: mode == "trunk"

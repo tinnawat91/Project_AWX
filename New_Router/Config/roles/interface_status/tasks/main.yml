@@ -1,0 +1,6 @@
+- include_tasks: interface_up.yml
+  when: up_or_down is defined and up_or_down == "up" 
+- include_tasks: interface_down.yml
+  when: up_or_down is defined and up_or_down == "down"
+- include_tasks: create_verify.yml
+  

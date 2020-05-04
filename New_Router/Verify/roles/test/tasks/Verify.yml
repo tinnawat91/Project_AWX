@@ -1,0 +1,7 @@
+--- 
+- name: Python Execution
+  IPtoNetwork: 
+    ip: "{{ ip }}"
+    mask: "{{ mask }}"
+  register: result
+- debug: var=result.msg

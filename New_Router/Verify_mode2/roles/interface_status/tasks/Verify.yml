@@ -1,0 +1,22 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip interface brief | section {{ interface_name }} 
+  register: int
+
+- name: Output(status up or down)
+  debug:
+    msg:
+      - Status of interface {{ interface_name }} is
+      - "{{ int.stdout_lines[0][0].split()[4] }}"
+  when: int.stdout_lines[0][0].split()[4] != "administratively"
+
+- name: Output(status administratively down)
+  debug:
+    msg:
+      - Status of interface {{ interface_name }} is
+      - administratively down
+  when: int.stdout_lines[0][0].split()[4] == "administratively"
+
+      

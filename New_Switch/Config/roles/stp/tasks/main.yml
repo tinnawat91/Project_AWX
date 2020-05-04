@@ -1,0 +1,5 @@
+- include_tasks: config_stp_priority.yml
+  when: mode == "priority"
+- include_tasks: config_stp_primary.yml
+  when: mode == "primary"
+- include_tasks: create_verify.yml

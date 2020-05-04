@@ -1,0 +1,41 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/interface_ip/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/interface_ip/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip interface brief | section {{ interface_name }}
+      \n  register: int
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your interface configuration is correct
+      \n      - Your interface ip address configuration is
+      \n      - {{ ip }}
+      \n      - And ip address of interface {{ interface_name }} is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][0].split()[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][0].split()[1] == \"{{ ip }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your interface configuration is incorrect
+      \n      - Your interface ip address configuration is
+      \n      - {{ ip }}
+      \n      - But ip address of interface {{ interface_name }} is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][0].split()[1] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][0].split()[1] != \"{{ ip }}\""
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/interface_ip/tasks/Verify.yml

@@ -1,0 +1,22 @@
+--- 
+- name: Verify ospf protocol 
+  ios_command: 
+    commands: 
+      - show ip protocol | include ospf 
+  register: ospf 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your ospf configuration is correct 
+      - You delete ospf protocol 
+      - And result is 
+      - "{{ ospf.stdout_lines[0][0] }}" 
+  when: (ospf.stdout_lines[0][0] == "") 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your ospf configuration is incorrect 
+      - You delete ospf protocol 
+      - But result is 
+      - "{{ ospf.stdout_lines[0][0] }}" 
+  when: (ospf.stdout_lines[0][0] != "")

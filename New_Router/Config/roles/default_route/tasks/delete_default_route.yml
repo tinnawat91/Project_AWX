@@ -1,0 +1,6 @@
+---
+- name: Delete default route
+  ios_config:
+    lines:
+      -  no ip route 0.0.0.0 0.0.0.0 
+

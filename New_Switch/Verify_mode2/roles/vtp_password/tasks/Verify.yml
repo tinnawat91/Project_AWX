@@ -1,0 +1,10 @@
+--- 
+- name: Verify vtp password
+  ios_command: 
+    commands: 
+      - show vtp password 
+  register: pass 
+- name: Output
+  debug: 
+    msg:  
+      - "{{ pass.stdout_lines[0][0] }}"

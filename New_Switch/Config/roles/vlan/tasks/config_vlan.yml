@@ -1,0 +1,12 @@
+---
+- name: Configure vlan
+  ios_config:
+    lines:
+      - vlan "{{ vlan_id }}"
+  when: vlan_name == ""
+- name: Configure vlan name
+  ios_config:
+    lines:
+      - vlan "{{ vlan_id }}"
+      - name {{ vlan_name }} 
+  when: vlan_name != ""

@@ -1,0 +1,6 @@
+---
+- name: Configure static route (next-hop)
+  ios_config:
+    lines:
+      - ip route {{ ip }} {{ mask }} {{ nh }}
+

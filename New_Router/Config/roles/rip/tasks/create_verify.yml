@@ -1,0 +1,91 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/rip/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/rip/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify IP address   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show run | include ip address {{ network }}
+      \n  register: ip
+      \n- name: Verify network to activate
+      \n  ios_command:
+      \n    commands:
+      \n      - show ip protocol | section rip
+      \n  register: rip
+      \n- name: Get subnet mask to change IP address to classful
+      \n  checkClassful:
+      \n    ip: {% raw %}\"{{ ip.stdout[0].split()[2] }}\"{% endraw %}
+      \n  register: classful
+      \n  when: {% raw %}ip.stdout[0]{% endraw %} != \"\"
+      \n- name: Change IP address to classful
+      \n  IPtoNetwork:
+      \n    ip: {% raw %}\"{{ ip.stdout[0].split()[2] }}\"{% endraw %}
+      \n    mask: {% raw %}\"{{ classful.msg }}\"{% endraw %}
+      \n  register: result
+      \n  when: {% raw %}ip.stdout[0]{% endraw %} != \"\"
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your rip configuration is correct
+      \n      - You input IP address {{ network }} to activate
+      \n      - IP address {{ network }} convert to classful to {% raw %}{{ result.msg }}{% endraw %}
+      \n      - IP classful to activated by rip is
+      \n      - {% raw %}\"{{ rip.stdout[0] | regex_search(result.msg) }}\"{% endraw %}
+      \n  when: {% raw %}ip.stdout[0]{% endraw %} != \"\" and result.msg == rip.stdout[0] | regex_search(result.msg)
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your rip configuration is incorrect
+      \n      - You input IP address {{ network }} to activate
+      \n      - IP address {{ network }} convert to classful to {% raw %}{{ result.msg }}{% endraw %}
+      \n      - IP classful to activated by rip is
+      \n      - {% raw %}\"{{ rip.stdout[0] | regex_search(result.msg) }}\"{% endraw %}
+      \n  when: ({% raw %}ip.stdout[0]{% endraw %} != \"\") and ((rip.stdout[0] == \"\") or (result.msg != rip.stdout[0] | regex_search(result.msg)))
+      \n- name: Incorrect(no IP address {{ network }})
+      \n  debug:
+      \n    msg:
+      \n      - IP address {{ network }} is not on the router interface
+      \n  when: {% raw %}ip.stdout[0]{% endraw %} == \"\""
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/rip/tasks/Verify.yml
+  when: mode == "Config"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify rip protocol
+      \n  ios_command:
+      \n    commands:
+      \n      - show ip protocol | include rip
+      \n  register: rip
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your rip configuration is correct
+      \n      - You delete rip protocol
+      \n      - And result is
+      \n      - {% raw %}\"{{ rip.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: {% raw %}rip.stdout_lines[0][0]{% endraw %} == \"\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your rip configuration is incorrect
+      \n      - You delete rip protocol
+      \n      - But result is
+      \n      - {% raw %}\"{{ rip.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: {% raw %}rip.stdout_lines[0][0]{% endraw %} != \"\""
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/rip/tasks/Verify.yml
+  when: mode == "Delete"

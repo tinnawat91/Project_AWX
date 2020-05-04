@@ -1,0 +1,50 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/vlan/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/vlan/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show vlan brief | section {{ vlan_id }}
+      \n  register: vl
+      \n- name: Verify header
+      \n  ios_command:
+      \n    commands:
+      \n      - show vlan brief
+      \n  register: head
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your vlan configuration is correct
+      \n      - Your vlan configuration is
+      \n      - {{ vlan_id }}
+      \n      - And output from switch is
+      \n      - {% raw %}\"{{ head.stdout_lines[0][0] }}\"{% endraw %}
+      \n      - {% raw %}\"{{ head.stdout_lines[0][1] }}\"{% endraw %}
+      \n      - {% raw %}\"{{ vl.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: vl.stdout_lines[0][0] != \"\" and vl.stdout_lines[0][0].split()[0] == \"{{ vlan_id }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your vlan configuration is incorrect
+      \n      - Your vlan configuration is
+      \n      - {{ vlan_id }}
+      \n      - But output from switch is
+      \n      - {% raw %}\"{{ head.stdout_lines[0][0] }}\"{% endraw %}
+      \n      - {% raw %}\"{{ head.stdout_lines[0][1] }}\"{% endraw %}
+      \n      - {% raw %}\"{{ vl.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: vl.stdout_lines[0][0] == \"\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/vlan/tasks/Verify.yml

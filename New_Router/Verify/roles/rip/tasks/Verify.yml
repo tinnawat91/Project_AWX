@@ -1,0 +1,22 @@
+--- 
+- name: Verify rip protocol 
+  ios_command: 
+    commands: 
+      - show ip protocol | include rip 
+  register: rip 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your rip configuration is correct 
+      - You delete rip protocol 
+      - And result is 
+      - "{{ rip.stdout_lines[0][0] }}" 
+  when: rip.stdout_lines[0][0] == "" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your rip configuration is incorrect 
+      - You delete rip protocol 
+      - But result is 
+      - "{{ rip.stdout_lines[0][0] }}" 
+  when: rip.stdout_lines[0][0] != ""

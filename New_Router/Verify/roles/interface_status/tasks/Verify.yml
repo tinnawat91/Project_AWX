@@ -1,0 +1,51 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip interface brief | section L0 
+  register: int 
+- name: Correct(up) 
+  debug: 
+    msg: 
+      - Your interface configuration is correct 
+      - Your interface status configuration is 
+      - up 
+      - And status of interface L0 is 
+      - "{{ int.stdout_lines[0][0].split()[4] }}" 
+  when: int.stdout_lines[0][0].split()[4] == "up" and "up" == "up" 
+- name: Correct(administratively down) 
+  debug: 
+    msg: 
+      - Your interface configuration is correct 
+      - Your interface status configuration is 
+      - up (administratively) 
+      - And status of interface L0 is 
+      - administratively down 
+  when: int.stdout_lines[0][0].split()[4] == "administratively" and "up" == "down" 
+- name: Incorrect(for input "up") 
+  debug: 
+    msg: 
+      - Your interface configuration is incorrect 
+      - Your interface configuration is 
+      - up 
+      - But status of interface L0 is 
+      - "{{ int.stdout_lines[0][0].split()[4] }}" 
+  when: int.stdout_lines[0][0].split()[4] != "up" and int.stdout_lines[0][0].split()[4] != "administratively" and "up" == "up" 
+- name: Incorrect(for input "down") 
+  debug: 
+    msg: 
+      - Your interface configuration is incorrect 
+      - Your interface configuration is 
+      - up (administratively down) 
+      - But status of interface L0 is 
+      - "{{ int.stdout_lines[0][0].split()[4] }}" 
+  when: int.stdout_lines[0][0].split()[4] != "administratively" and "up" == "down" 
+- name: Incorrect(administratively down) 
+  debug: 
+    msg: 
+      - Your interface configuration is incorrect 
+      - Your interface configuration is 
+      - up 
+      - But status of interface L0 is 
+      - administratively down 
+  when: int.stdout_lines[0][0].split()[4] != "up" and int.stdout_lines[0][0].split()[4] == "administratively" and "up" != "down"

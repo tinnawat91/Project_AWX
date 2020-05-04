@@ -1,0 +1,68 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/interface_status/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/interface_status/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip interface brief | section {{ interface_name }}
+      \n  register: int
+      \n- name: Correct(up)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface configuration is correct
+      \n      - Your interface status configuration is
+      \n      - {{ up_or_down }}
+      \n      - And status of interface {{ interface_name }} is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][0].split()[4] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][0].split()[4] == \"{{ up_or_down }}\" and \"{{ up_or_down }}\" == \"up\"
+      \n- name: Correct(administratively down)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface configuration is correct
+      \n      - Your interface status configuration is
+      \n      - {{ up_or_down }} (administratively)
+      \n      - And status of interface {{ interface_name }} is
+      \n      - administratively down
+      \n  when: int.stdout_lines[0][0].split()[4] == \"administratively\" and \"{{ up_or_down }}\" == \"down\"
+      \n- name: Incorrect(for input \"up\")
+      \n  debug:
+      \n    msg:
+      \n      - Your interface configuration is incorrect
+      \n      - Your interface configuration is
+      \n      - {{ up_or_down }}
+      \n      - But status of interface {{ interface_name }} is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][0].split()[4] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][0].split()[4] != \"{{ up_or_down }}\" and int.stdout_lines[0][0].split()[4] != \"administratively\" and \"{{ up_or_down }}\" == \"up\"
+      \n- name: Incorrect(for input \"down\")
+      \n  debug:
+      \n    msg:
+      \n      - Your interface configuration is incorrect
+      \n      - Your interface configuration is
+      \n      - {{ up_or_down }} (administratively down)
+      \n      - But status of interface {{ interface_name }} is
+      \n      - {% raw %}\"{{ int.stdout_lines[0][0].split()[4] }}\"{% endraw %}
+      \n  when: int.stdout_lines[0][0].split()[4] != \"administratively\" and \"{{ up_or_down }}\" == \"down\"      
+      \n- name: Incorrect(administratively down)
+      \n  debug:
+      \n    msg:
+      \n      - Your interface configuration is incorrect
+      \n      - Your interface configuration is
+      \n      - {{ up_or_down }}
+      \n      - But status of interface {{ interface_name }} is
+      \n      - administratively down
+      \n  when: int.stdout_lines[0][0].split()[4] != \"{{ up_or_down }}\" and int.stdout_lines[0][0].split()[4] == \"administratively\" and \"{{ up_or_down }}\" != \"down\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/interface_status/tasks/Verify.yml

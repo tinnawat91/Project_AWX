@@ -1,0 +1,14 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip interface brief | section {{ interface_name }} 
+  register: int
+
+- name: Output
+  debug:
+    msg:
+      - IP-Address of interface {{ interface_name }} is
+      - "{{ int.stdout_lines[0][0].split()[1] }}"
+
+      

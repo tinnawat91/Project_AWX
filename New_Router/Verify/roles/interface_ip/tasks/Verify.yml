@@ -1,0 +1,24 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip interface brief | section Loopback0 
+  register: int 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your interface configuration is correct 
+      - Your interface ip address configuration is 
+      - 1.1.1.1 
+      - And ip address of interface Loopback0 is 
+      - "{{ int.stdout_lines[0][0].split()[1] }}" 
+  when: int.stdout_lines[0][0].split()[1] == "1.1.1.1" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your interface configuration is incorrect 
+      - Your interface ip address configuration is 
+      - 1.1.1.1 
+      - But ip address of interface Loopback0 is 
+      - "{{ int.stdout_lines[0][0].split()[1] }}" 
+  when: int.stdout_lines[0][0].split()[1] != "1.1.1.1"

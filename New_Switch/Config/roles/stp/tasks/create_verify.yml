@@ -1,0 +1,82 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/stp/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Switch/Verify/roles/stp/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify priority
+      \n  ios_command:  
+      \n    commands:
+      \n      - show spanning-tree vlan {{ vlan }} bridge | include {{ priority | int + vlan | int }}
+      \n  register: name
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your stp priority configuration is correct
+      \n      - Your stp priority configuration is
+      \n      - \"{{ priority }}\"
+      \n      - Bridge priority should be 
+      \n      - \"{{ priority | int + vlan | int }} ( priority + vlan id )\"
+      \n      - And bridge priority is
+      \n      - {% raw %}\"{{ name.stdout[0].split()[1] }}\"{% endraw %}
+      \n  when: name.stdout[0].split()[1] == \"{{ priority | int + vlan | int }}\"
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your stp priority configuration is incorrect
+      \n      - Your stp priority configuration is
+      \n      - \"{{ priority }}\"
+      \n      - Bridge priority should be 
+      \n      - \"{{ priority | int + vlan | int }} ( priority + vlan id )\"
+      \n      - But bridge priority is
+      \n      - {% raw %}\"{{ name.stdout[0].split()[1] }}\"{% endraw %}
+      \n  when: name.stdout[0].split()[1] != \"{{ priority | int + vlan | int }}\""
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/stp/tasks/Verify.yml
+  when: mode == "priority"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify priority
+      \n  ios_command:  
+      \n    commands:
+      \n      - show spanning-tree vlan {{ vlan }} | include Priority
+      \n  register: name
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your stp priority configuration is correct
+      \n      - Your stp priority configuration is
+      \n      - \"primary\"
+      \n      - Bridge priority should be equal to Root priority
+      \n      - And bridge priority is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][0].split()[3] }}\"{% endraw %}
+      \n      - And root priority is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][1].split()[3] }}\"{% endraw %}
+      \n  when: name.stdout_lines[0][0].split()[3] == name.stdout_lines[0][1].split()[3]
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your stp priority configuration is incorrect
+      \n      - Your stp priority configuration is
+      \n      - \"primary\"
+      \n      - Bridge priority should be equal to Root priority
+      \n      - And bridge priority is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][0].split()[3] }}\"{% endraw %}
+      \n      - And root priority is
+      \n      - {% raw %}\"{{ name.stdout_lines[0][1].split()[3] }}\"{% endraw %}
+      \n  when: name.stdout_lines[0][0].split()[3] != name.stdout_lines[0][1].split()[3]"
+    dest: /var/lib/awx/projects/New_Switch/Verify/roles/stp/tasks/Verify.yml
+  when: mode == "primary"

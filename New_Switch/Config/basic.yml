@@ -1,0 +1,11 @@
+---
+
+- hosts: "{{ host_ip }}"
+  gather_facts: no
+  
+  roles:
+    - {role: hostname, when: hostname is defined and hostname != ""}
+    - {role: interface_status, when: up_or_down is defined }
+
+   
+ 

@@ -1,0 +1,11 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip route static | include 0.0.0.0/0 
+  register: name 
+- name: Output
+  debug: 
+    msg: 
+      - Router default route is 
+      - "{{ name.stdout[0] }}"

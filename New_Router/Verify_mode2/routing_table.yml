@@ -1,0 +1,8 @@
+---
+
+- hosts: "{{ host_ip }}"
+  gather_facts: no
+  
+  roles:
+    - {role: routing_table}
+

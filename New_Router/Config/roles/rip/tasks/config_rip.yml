@@ -1,0 +1,11 @@
+---
+- name: Configure rip protocol
+  ios_config:
+    lines:
+      - network {{ network }}
+      - no auto
+      - version 2
+    parents: 
+      - router rip
+ 
+   

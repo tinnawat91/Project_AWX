@@ -1,0 +1,16 @@
+--- 
+- name: Verify vtp mode
+  ios_command: 
+    commands: 
+      - show vtp status | section Operating 
+  register: mode 
+- name: Verify vtp domain
+  ios_command:
+    commands:
+      - show vtp status | section Domain
+  register: domain
+- name: Output
+  debug: 
+    msg:  
+      - "{{ mode.stdout_lines[0][0].split() | join(' ') }}"
+      - "{{ domain.stdout_lines[0][0].split() | join(' ') }}"

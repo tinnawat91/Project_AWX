@@ -1,0 +1,6 @@
+---
+- name: Configure stp root primary
+  ios_config:
+    lines:
+      - spanning-tree vlan {{ vlan }} root primary
+

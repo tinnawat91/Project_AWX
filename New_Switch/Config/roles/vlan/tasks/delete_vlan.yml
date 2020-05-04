@@ -1,0 +1,9 @@
+---
+- name: Delete Vlan
+  ios_config:
+    lines:
+      - no vlan "{{ vlan_id }}"
+#      ios_vlan:
+#        vlan_id: "{{ 444 }}"
+#        name: test-vlan
+#        state: present

@@ -1,0 +1,6 @@
+---
+- name: Configure vtp mode
+  ios_config:
+    lines:
+      - vtp mode {{ mode }}
+      - vtp domain "{{ domain }}"

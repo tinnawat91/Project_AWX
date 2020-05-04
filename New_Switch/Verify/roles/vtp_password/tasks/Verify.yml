@@ -1,0 +1,24 @@
+--- 
+- name: Verify vtp password 
+  ios_command: 
+    commands: 
+      - show vtp password 
+  register: pass 
+- name: Correct 
+  debug: 
+    msg: 
+      - Your vtp password configuration is correct 
+      - Your vtp password configuration is 
+      - "12345" 
+      - And output from switch is 
+      - "{{ pass.stdout_lines[0][0].split()[2] }}" 
+  when: pass.stdout_lines[0][0].split()[2] == "12345" 
+- name: Incorrect 
+  debug: 
+    msg: 
+      - Your vtp password configuration is incorrect 
+      - Your vtp password configuration is 
+      - "12345" 
+      - But output from switch is 
+      - "{{ pass.stdout_lines[0][0].split()[2] }}" 
+  when: pass.stdout_lines[0][0].split()[2] != "12345"

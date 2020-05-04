@@ -1,0 +1,82 @@
+---
+
+- name: Remove Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/ospf/tasks/Verify.yml
+    state: absent
+
+- name: Touch Verify.yml
+  file:
+    path: /var/lib/awx/projects/New_Router/Verify/roles/ospf/tasks/Verify.yml
+    state: touch
+    mode: u=rw,g=r,o=r
+    
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify IP address
+      \n  ios_command:
+      \n    commands:
+      \n      - show run | include ip address {{ prefix }}
+      \n  register: ip
+      \n- name: Verify Network to activate   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip protocol | section ospf
+      \n  register: ospf
+      \n  when: {% raw %}ip.stdout[0]{% endraw %} != \"\" 
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your ospf configuration is correct
+      \n      - Your ospf configuration is
+      \n      - \"{{ prefix }} 0.0.0.0 area {{ area }}\"
+      \n      - And output is
+      \n      - {% raw %}\"{{ ospf.stdout[0] | regex_search('{% endraw %}{{ prefix }} 0.0.0.0 area {{ area }}{% raw %}') }}\"{% endraw %}
+      \n  when: ({% raw %}ip.stdout[0]{% endraw %} != \"\") and ((ospf.stdout[0] | regex_search('{{ prefix }} 0.0.0.0 area {{ area }}')) == \"{{ prefix }} 0.0.0.0 area {{ area }}\")
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your ospf configuration is incorrect
+      \n      - Your ospf configuration is
+      \n      - \"{{ prefix }} 0.0.0.0 area {{ area }}\"
+      \n      - But output is
+      \n      - {% raw %}\"{{ ospf.stdout[0] | regex_search('{% endraw %}{{ prefix }} 0.0.0.0 area {{ area }}{% raw %}') }}\"{% endraw %}
+      \n  when: ({% raw %}ip.stdout[0]{% endraw %} != \"\") and ((ospf.stdout[0] | regex_search('{{ prefix }} 0.0.0.0 area {{ area }}')) != \"{{ prefix }} 0.0.0.0 area {{ area }}\")
+      \n- name: Incorrect(no IP address {{ prefix }})
+      \n  debug:
+      \n    msg:
+      \n      - IP address {{ prefix }} is not on the router
+      \n  when: {% raw %}ip.stdout[0]{% endraw %} == \"\""
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/ospf/tasks/Verify.yml
+  when: mode == "Config"
+
+- name: Copy contents to Verify.yml 
+  copy:
+    content:
+      "--- 
+      \n- name: Verify ospf protocol   
+      \n  ios_command:  
+      \n    commands:
+      \n      - show ip protocol | include ospf
+      \n  register: ospf 
+      \n- name: Correct
+      \n  debug:
+      \n    msg:
+      \n      - Your ospf configuration is correct
+      \n      - You delete ospf protocol
+      \n      - And result is
+      \n      - {% raw %}\"{{ ospf.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: ({% raw %}ospf.stdout_lines[0][0]{% endraw %} == \"\") 
+      \n- name: Incorrect
+      \n  debug:
+      \n    msg:
+      \n      - Your ospf configuration is incorrect
+      \n      - You delete ospf protocol
+      \n      - But result is
+      \n      - {% raw %}\"{{ ospf.stdout_lines[0][0] }}\"{% endraw %}
+      \n  when: ({% raw %}ospf.stdout_lines[0][0]{% endraw %} != \"\")"
+    dest: /var/lib/awx/projects/New_Router/Verify/roles/ospf/tasks/Verify.yml
+  when: mode == "Delete"
+

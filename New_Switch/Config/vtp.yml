@@ -1,0 +1,11 @@
+---
+
+- hosts: "{{ host_ip }}"
+  gather_facts: no
+  
+  roles:
+    - {role: vtp_mode_domain, when: mode is defined }
+    - {role: vtp_password, when: c_or_d is defined }
+
+   
+ 

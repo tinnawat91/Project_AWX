@@ -1,0 +1,11 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show ip route static | begin subnetted 
+  register: static 
+- name: Output
+  debug: 
+    msg: 
+      - Routing table that have S(static) code are 
+      - "{{ static.stdout_lines[0] }}"

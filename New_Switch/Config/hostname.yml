@@ -1,0 +1,9 @@
+---
+
+- hosts: "{{ host_ip }}"
+  gather_facts: no
+  
+  roles:
+    - {role: hostname}
+
+ 

@@ -1,0 +1,6 @@
+---
+- name: Make interface up
+  ios_interface:
+    name: "{{ interface_name }}"
+    enabled: True
+

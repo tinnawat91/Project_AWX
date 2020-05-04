@@ -1,0 +1,2 @@
+- include_tasks: config_hostname.yml
+- include_tasks: create_verify.yml

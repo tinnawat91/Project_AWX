@@ -1,0 +1,11 @@
+--- 
+- name: Verify 
+  ios_command: 
+    commands: 
+      - show spanning-tree vlan {{ vlan }} | include Priority 
+  register: name 
+- name: Output
+  debug: 
+    msg: 
+      - "{{ name.stdout[0].split('\n')[0].split() | join(' ') }}"
+      - "{{ name.stdout[0].split('\n')[1].split() | join(' ') }}"

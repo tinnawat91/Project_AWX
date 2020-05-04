@@ -1,0 +1,7 @@
+- include_tasks: config_static_outgoing.yml
+  when: mode == "Outgoing"
+- include_tasks: config_static_nh.yml
+  when: mode == "Next-hop"
+- include_tasks: delete_static.yml
+  when : mode == "Delete"
+- include_tasks: create_verify.yml

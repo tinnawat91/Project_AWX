@@ -1,0 +1,7 @@
+---
+- name: Delete ospf protocol
+  ios_config:
+    lines:
+      - no router ospf {{ ps_id }}
+ 
+   
